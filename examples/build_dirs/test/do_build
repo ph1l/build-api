@@ -1,0 +1,28 @@
+#!/bin/sh -ex
+#
+
+GIT_REPO=git@github.com:ph1l/test.git
+BUILD_DIR=test
+BUILD_TARGET="master"
+
+# This redirects all stderr to stdout for the duration of the script.
+exec 2>&1
+
+if [ ! -d ${BUILD_DIR} ]; then
+	git clone ${GIT_REPO} ${BUILD_DIR}
+fi
+
+cd ${BUILD_DIR}
+
+git co ${BUILD_TARGET}
+
+git fetch origin
+git merge origin/${BUILD_TARGET}
+git reset --hard HEAD
+
+make all
+
+# Do something useful here
+
+echo build finished sucessfully
+

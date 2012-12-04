@@ -1,0 +1,30 @@
+#!/bin/sh -ex
+#
+
+GIT_REPO=git@github.com:ph1l/cfengine3-debian.git
+BUILD_DIR=cfengine3
+BUILD_TARGET="master"
+
+# This redirects all stderr to stdout for the duration of the script.
+exec 2>&1
+
+if [ ! -d ${BUILD_DIR} ]; then
+	git clone ${GIT_REPO} ${BUILD_DIR}
+fi
+
+cd ${BUILD_DIR}
+
+git co ${BUILD_TARGET}
+
+git fetch origin
+git merge origin/${BUILD_TARGET}
+git reset --hard HEAD
+
+git-buildpackage --git-debian-branch=${BUILD_TARGET} --git-export-dir=../build-area -rfakeroot -us -uc
+
+cd ..
+
+ls -lah *
+
+echo build finished sucessfully
+
